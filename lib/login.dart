@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:session_storage/session_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +17,9 @@ class _LoginPageState extends State<Login> {
   TextEditingController user = TextEditingController();
   TextEditingController pass = TextEditingController();
   Future login() async {
-    var url = Uri.http('192.168.50.150:8080', '/user/login', {'q': '{http}'});
+    var baseUrl = dotenv.env['API_URL'];
+    print(baseUrl);
+    var url = Uri.http(baseUrl.toString(), '/user/login', {'q': '{http}'});
     var body = json.encode({
       'email': user.text,
       'password': pass.text,
@@ -31,21 +34,48 @@ class _LoginPageState extends State<Login> {
       status = jsonResponse['status'];
       int code = jsonResponse['code'];
       String message = jsonResponse['message'];
-      var jsonData = jsonResponse['data'];
-      // Accessing the data
-      var firstItem = jsonData[0];
-      var id = firstItem['id'];
-      // var email = firstItem['email'];
-      // var fullname = firstItem['fullname'];
-      // var role = firstItem['role'];
 
-      print(id); // Output: 1
-      // print(email); // Output: tuyenlnse@gmail.com
-      // print(fullname); // Output: tuyenln
-      // print(role); // Output: admin
+      if (status == 'fail') {
+        Fluttertoast.showToast(
+          backgroundColor: Colors.orange,
+          textColor: Colors.white,
+          msg: 'User already exit!',
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      } else {
+        var jsonData = jsonResponse['data'];
+        if (jsonData.isNotEmpty) {
+          print(jsonData);
+          // Accessing the data
+          var firstItem = jsonData[0];
+          var id = firstItem['id'];
+          final session = SessionStorage();
+          session['userid'] = id.toString();
+        }
 
-      final session = SessionStorage();
-      session['userid'] = id.toString();
+        if (status == 'ok') {
+          Fluttertoast.showToast(
+            msg: 'Login Successful',
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            toastLength: Toast.LENGTH_SHORT,
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DashBoard(),
+            ),
+          );
+        } else {
+          Fluttertoast.showToast(
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            msg: 'Username and password invalid',
+            toastLength: Toast.LENGTH_SHORT,
+          );
+        }
+        
+      }
     } else {
       print('Request failed with status code: ${response.statusCode}');
     }

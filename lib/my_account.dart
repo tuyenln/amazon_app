@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:session_storage/session_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,7 +21,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _refreshData() async {
     final session = SessionStorage();
     var id = session["userid"];
-    var url = Uri.http('192.168.50.150:8080', '/user/profile', {'q': '{http}'});
+    var baseUrl = dotenv.env['API_URL'];
+    var url = Uri.http(baseUrl.toString(), '/user/profile', {'q': '{http}'});
     var body = json.encode({'id': id});
     var response = await http.post(url, body: body);
     int code = response.statusCode;

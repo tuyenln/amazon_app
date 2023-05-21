@@ -13,9 +13,12 @@ import 'login.dart';
 import 'login_option.dart';
 import 'Dashboard.dart';
 import 'package.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
-void main() {
+void main() async {
+  // await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "lib/common/.env");
   runApp(const MyApp());
 }
 

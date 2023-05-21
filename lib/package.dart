@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'User.dart';
 import 'login.dart';
 import 'main.dart';
@@ -23,7 +24,8 @@ class _PackagePageState extends State<PackagePage> {
   bool _isLoading = true;
 
   void _refreshData() async {
-    var url = Uri.http('192.168.50.150:8080', '/package/list', {'q': '{http}'});
+    var baseUrl = dotenv.env['API_URL'];
+    var url = Uri.http(baseUrl.toString(), '/package/list', {'q': '{http}'});
     var body = json.encode({});
     var response = await http.get(url);
     // var data = json.decode(response.body);

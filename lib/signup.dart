@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -21,8 +22,9 @@ class _SignUpState extends State<SignUp> {
   TextEditingController pass = TextEditingController();
 
   Future register() async {
+    var baseUrl = dotenv.env['API_URL'];
     var url =
-        Uri.http("192.168.50.150:8080", '/user/register', {'q': '{http}'});
+        Uri.http(baseUrl.toString(), '/user/register', {'q': '{http}'});
     var body = json.encode({
       'email': user.text,
       'password': pass.text,
@@ -36,31 +38,40 @@ class _SignUpState extends State<SignUp> {
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body);
       status = jsonResponse['status'];
-      int code = jsonResponse['code'];
-      String message = jsonResponse['message'];
-      print(message);
-      // String id = data['id'];
-      // String fullName = data['full_name'];
-      // String email = data['email'];
-      // String role = data['role'];
-      // String token = data['token'];
 
-      var jsonData = jsonResponse['data'];
-      print(jsonData);
-      // Accessing the data
-      var firstItem = jsonData[0];
-      var id = firstItem['id'];
-      // var email = firstItem['email'];
-      // var fullname = firstItem['fullname'];
-      // var role = firstItem['role'];
-
-      // print(id); // Output: 1
-      // print(email); // Output: tuyenlnse@gmail.com
-      // print(fullname); // Output: tuyenln
-      // print(role); // Output: admin
-
-      final session = SessionStorage();
-      session['userid'] = id.toString();
+      if (status == 'fail') {
+        Fluttertoast.showToast(
+          backgroundColor: Colors.orange,
+          textColor: Colors.white,
+          msg: 'User already exit!',
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      } else {
+        int code = jsonResponse['code'];
+        String message = jsonResponse['message'];
+        print(message);
+        var jsonData = jsonResponse['data'];
+        if (jsonData.isNotEmpty) {
+          print(jsonData);
+          // Accessing the data
+          var firstItem = jsonData[0];
+          var id = firstItem['id'];
+          final session = SessionStorage();
+          session['userid'] = id.toString();
+        }
+        Fluttertoast.showToast(
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          msg: 'Registration Successful',
+          toastLength: Toast.LENGTH_SHORT,
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DashBoard(),
+          ),
+        );
+      }
     } else {
       print('Request failed with status code: ${response.statusCode}');
     }
