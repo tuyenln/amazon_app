@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:session_storage/session_storage.dart';
 
 import 'Dashboard.dart';
 
@@ -37,11 +38,29 @@ class _SignUpState extends State<SignUp> {
       status = jsonResponse['status'];
       int code = jsonResponse['code'];
       String message = jsonResponse['message'];
+      print(message);
       // String id = data['id'];
       // String fullName = data['full_name'];
       // String email = data['email'];
       // String role = data['role'];
       // String token = data['token'];
+
+      var jsonData = jsonResponse['data'];
+      print(jsonData);
+      // Accessing the data
+      var firstItem = jsonData[0];
+      var id = firstItem['id'];
+      // var email = firstItem['email'];
+      // var fullname = firstItem['fullname'];
+      // var role = firstItem['role'];
+
+      // print(id); // Output: 1
+      // print(email); // Output: tuyenlnse@gmail.com
+      // print(fullname); // Output: tuyenln
+      // print(role); // Output: admin
+
+      final session = SessionStorage();
+      session['userid'] = id.toString();
     } else {
       print('Request failed with status code: ${response.statusCode}');
     }

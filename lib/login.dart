@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:session_storage/session_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'Dashboard.dart';
@@ -30,13 +31,21 @@ class _LoginPageState extends State<Login> {
       status = jsonResponse['status'];
       int code = jsonResponse['code'];
       String message = jsonResponse['message'];
-      // Map<String, dynamic> data = jsonResponse['data'];
-      // var data = json.decode(jsonResponse['data']);
-      // String id = data['id'];
-      // String fullName = data['full_name'];
-      // String email = data['email'];
-      // String role = data['role'];
-      // String token = data['token'];
+      var jsonData = jsonResponse['data'];
+      // Accessing the data
+      var firstItem = jsonData[0];
+      var id = firstItem['id'];
+      // var email = firstItem['email'];
+      // var fullname = firstItem['fullname'];
+      // var role = firstItem['role'];
+
+      print(id); // Output: 1
+      // print(email); // Output: tuyenlnse@gmail.com
+      // print(fullname); // Output: tuyenln
+      // print(role); // Output: admin
+
+      final session = SessionStorage();
+      session['userid'] = id.toString();
     } else {
       print('Request failed with status code: ${response.statusCode}');
     }
