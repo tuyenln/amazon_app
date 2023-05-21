@@ -129,7 +129,7 @@ class _MainDashBoardState extends State<MainDashBoard> {
           children: <Widget>[
             IconButton(
               onPressed: () {
-                signOut();
+                // signOut();
               },
               icon: const Icon(
                 Icons.menu,
